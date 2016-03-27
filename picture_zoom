@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>picture zoom</title>
+</head>
+<body >
+<div style="width: 80%">
+<img src="1.png" style="width: 300px;float: left;margin: 10px" >
+<img src="2.jpg" style="width: 300px;float: left;margin: 10px" >
+<img src="3.jpg" style="width: 300px;float: left;margin: 10px" >
+<img src="4.jpg" style="width: 300px;float: left;margin: 10px" >
+<img src="5.jpg" style="width: 300px;float: left;margin: 10px" >
+<img src="6.jpg" style="width: 300px;float: left;margin: 10px" >
+<img src="7.jpg" style="width: 300px;float: left;margin: 10px" >
+</div>
+<canvas id="painting" width="400px" height="400px" style="border: 1px solid black;float: right;position: fixed ;margin-left: 10px;right: 5px"></canvas>
+</body>
+<
+<script>
+    var painting = document.getElementById("painting");
+    if(painting.getContext){
+        var doctext = painting.getContext("2d");
+
+    }
+    function mouseMove(e){
+        e = event||window.event;
+        var image = e.target;
+        console.dir(image.nodeName==="IMG");
+        if(image.nodeName==="IMG"){document.onmousemove = function(e) {
+            e = event||window.event;
+            doctext.clearRect(0, 0, 400, 400);
+            var mousePos = (function () {
+                if (e.pageX || e.pageY) {
+                    return {
+                        x: e.pageX,
+                        y: e.pageY
+                    }
+                }
+                return {
+                    x: e.clientX + document.body.scrollLeft - document.body.clientLeft,
+                    y: e.clientY + document.body.scrollTop - document.body.clientTop
+                }
+            })();
+            var imgPaddingLeft,
+                    imgPaddingtop;
+            if (image.style.padding) {
+                imgPaddingLeft = parseInt(image.style.paddingLeft, 10);
+                imgPaddingtop = parseInt(image.style.paddingTop, 10);
+            }
+            else {
+                imgPaddingLeft = 0;
+                imgPaddingtop = 0;
+            }
+            var ratio = image.naturalWidth / image.width,
+                    sourceStartX = (mousePos.x - image.x - 50 - imgPaddingLeft) < 0 ? 0 : (mousePos.x - image.x - 50 - imgPaddingLeft),
+                    sourceStartY = (mousePos.y - image.y - 50 - imgPaddingtop) < 0 ? 0 : (mousePos.y - image.y - 50 - imgPaddingtop),
+                    enlargeWidth = image.naturalWidth - sourceStartX * ratio - ratio * 100 < 0 ? 400 + image.naturalWidth - sourceStartX * ratio - ratio * 100 : 400,
+                    enlargeHeight = image.naturalHeight - sourceStartY * ratio - ratio * 100 < 0 ? 400 + image.naturalHeight - sourceStartY * ratio - ratio * 100 : 400;
+            doctext.drawImage(image, sourceStartX * ratio, sourceStartY * ratio, ratio * 100, ratio * 100, 0, 0, enlargeWidth, enlargeHeight);
+        }
+        }
+    }
+//    console.dir(image);
+    document.onmouseover = mouseMove;
+</script>
+</html>
